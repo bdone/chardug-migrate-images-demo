@@ -39,5 +39,3 @@ function chardug_migrate_images_static_migrate_api() {
   );
   return $api;
 }
-
-
