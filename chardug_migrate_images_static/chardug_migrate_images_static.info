@@ -1,0 +1,6 @@
+name = "CharDUG Image Migration Example (Static)"
+core = 7.x
+dependencies[] = migrate (>7.x-2.5)
+package = CharDUG Migrate Examples
+
+files[] = migrate.chardugimages.inc
