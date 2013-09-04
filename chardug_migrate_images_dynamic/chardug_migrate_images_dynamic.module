@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * CharDUG dynamic image migration example module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function chardug_migrate_images_dynamic_menu() {
+  $items['admin/content/chardug'] = array(
+    'type' => MENU_LOCAL_TASK | MENU_NORMAL_ITEM,
+    'title' => 'CharDUG',
+    'description' => 'Dynamic migration example',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('chardug_import_form'),
+    'access arguments' => array('administer nodes'),
+  );
+  return $items;
+}
+
+/**
+ * Menu callback: Returns page for setting a custom migration image source path.
+ */
+function chardug_import_form($form, &$form_state) {
+  drupal_set_title(t('CharDUG dynamic migration sample'));
+  $form['source_directory'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Image source directory'),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Import'),
+  );
+  return $form;
+}
+
+/**
+ * Submit callback for the chardug import form.
+ */
+function chardug_import_form_submit($form, &$form_state) {
+
+  $group_name = 'chardug';
+  $class_name = 'CharDUGImagesDynamic';
+  $machine_name = 'CharDUGImagesDynamic';
+
+  $arguments = array();
+  $arguments['group_name'] = $group_name;
+  $arguments['source_directory'] = $form_state['values']['source_directory'];
+
+  // Register group and migration.
+  MigrateGroup::register('chardug', 'CharDUG Sample Migrations');
+  Migration::registerMigration($class_name, $machine_name, $arguments);
+  Migration::getInstance('CharDUGImagesDynamic');
+  menu_rebuild();
+
+  // Send migrate job to drush.
+  $drush_command = trim(variable_get('migrate_drush_path', '')) . ' mi --group=' . $group_name . ' --uri=' . 'http://' . $_SERVER['HTTP_HOST'] . ' --root=' . DRUPAL_ROOT;
+
+  exec($drush_command);
+  if (variable_get('migrate_drush_mail', 0)) {
+    drupal_set_message(t('Import is running in the background. You will receive an email message when it is complete.'));
+  }
+  else {
+    drupal_set_message(t('Import is running in the background. Refresh the migrate UI page to check on its progress.'));
+  }
+
+}

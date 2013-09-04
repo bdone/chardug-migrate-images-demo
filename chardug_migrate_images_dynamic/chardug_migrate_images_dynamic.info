@@ -1,0 +1,8 @@
+name = "CharDUG Image Migration Example (Dynamic)"
+core = 7.x
+dependencies[] = migrate (>7.x-2.5)
+dependencies[] = migrate_ui
+package = CharDUG Migrate Examples
+
+files[] = chardug_migrate_images_dynamic.migrate.inc
+files[] = migrate.chardugimages.inc
